@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: Mark Neuburger
 subtitle:
-description:
+description: I’m a software engineer and maker living in rainy Seattle, WA. Currently, I work as a front end dev at Arivale. I can usually be found programming during the week and biking, hiking, or climbing on the weekends. Sometimes I write about coding and making. Check out the latest or get in touch.
 keywords:
-author: John Doe
+author: Mark Neuburger
 language:
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: https://www.markneuburger.com
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -73,7 +73,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: light 
+theme: cactus 
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
