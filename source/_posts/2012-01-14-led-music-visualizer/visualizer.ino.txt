@@ -1,0 +1,128 @@
+/*
+  Arduino LED Music Visualizer
+
+  Reads audio input from a stereo minijack and displays the audio spectrum via a matrix of LEDs.
+
+  Created December 3, 2011
+  By Mark Neuburger
+  Modified January 15, 2014
+  By Mark Neuburger
+
+  http://www.markneuburger.com/projects/visualizer
+
+*/
+
+// Alex Leone's Arduino TLC5940 library
+// http://code.google.com/p/tlc5940arduino/
+// see his excellent documentation to learn how to use
+#include "Tlc5940.h"
+
+// keep track of spectrum analyzer vals (0-1023) for 7 bands
+int SpectrumLeft[7];
+int SpectrumRight[7];
+
+// max of L/R channels (0-1023) for last displayed spectrum values
+int lastSpectrum[7];
+
+// setup pins for spectrum analayzer
+int spectrumReset=5;
+int spectrumStrobe=4;
+int spectrumAnalogLeft=0;
+int spectrumAnalogRight=1;
+
+// 12 bits/channel TLC5490 takes values from 0-4095
+const int GREEN_INTENSITY = 2048;
+const int YELLOW_INTENSITY = 4095;
+const int RED_INTENSITY = 2400;
+
+// map LED order to TLC5490 pins
+// i.e. bottom-left LED is connected to TLC5490 pin 54,
+// the one to its immediate right is connected to TLC5490 pin 51
+// TLC5490s are daisy chained and numbering goes like this:
+// 0-15 (first TLC5490), 16-31 (second TLC5490), etc.
+// if you connect your LEDs in order, you won't need to map your pins to LEDS like this
+int pins[] = {
+  54,51,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,30,22,23,24,25,26,27,28,29,31,32,33,34,35,36,37,38,39,40,41,42,53,55,59,49,47,43};
+
+void setup() {
+  spectrum_init();
+  Tlc.init(0);
+
+  for (byte i = 0; i < 7; i++ ) {
+    lastSpectrum[i] = 0;
+  }
+}
+
+void loop() {
+  Tlc.clear();
+
+  int channel, newSpectrum, oldSpectrum, updatedSpectrum;;
+
+  // each band is represented as a column
+  for (byte band = 1; band <= 7; band++) {
+    // read spectrum analyzer
+    SpectrumLeft[band-1] = analogRead(spectrumAnalogLeft);
+    SpectrumRight[band-1] = analogRead(spectrumAnalogRight);
+    digitalWrite(spectrumStrobe,HIGH);
+    digitalWrite(spectrumStrobe,LOW);
+
+    newSpectrum = max(SpectrumLeft[band-1], SpectrumRight[band-1]);
+    oldSpectrum = lastSpectrum[band-1];
+
+    // rather than displaying current exact values,
+    // smooth out the display to sacrifice a little bit of accuracy
+    // to get a more pleasing rising and falling effect
+    // also, adjust coefficients to make bars climb faster than they drop
+    if (oldSpectrum < newSpectrum)
+      updatedSpectrum = (newSpectrum * .5) + (oldSpectrum * .5);
+    else
+      updatedSpectrum = (newSpectrum * .2) + (oldSpectrum * .8);
+
+    // set a lower threshold to clean up display a little
+    // (don't display anything if it's just some noise)
+    if (updatedSpectrum < 150) updatedSpectrum = 0;
+
+    // bump up some of the very loud notes to red to liven the display a little
+    if (updatedSpectrum > 975) updatedSpectrum = 1023;
+
+    // convert value from 0-1023 to 0-7 for display
+    // eschew using map() to experiment with non-linear scaling
+    int displayHeight = min(7, int(0.5 + (updatedSpectrum / (1023 / 7))));
+
+    // set which LEDs should be lit up (doesn't actually update the TLC5940s)
+    for (int row = 1; row <= displayHeight; row++) {
+      channel = (row-1)*7+band-1;
+      int intensity;
+      if (displayHeight <= 4) intensity = GREEN_INTENSITY;
+      if (displayHeight == 5 | displayHeight == 6) intensity = YELLOW_INTENSITY;
+      if (displayHeight == 7) intensity = RED_INTENSITY;
+      Tlc.set(pins[channel], intensity);
+    }
+
+    // remember the current values for use in the next iteration
+    lastSpectrum[band-1] = updatedSpectrum;
+  }
+  // actually update the TLC5940
+  Tlc.update();
+
+  delay(8);
+}
+
+void spectrum_init()
+{
+  // setup pins to drive the spectrum analyzer
+  pinMode(spectrumReset, OUTPUT);
+  pinMode(spectrumStrobe, OUTPUT);
+
+  // initialize spectrum analyzer
+  digitalWrite(spectrumStrobe,LOW);
+  delay(1);
+  digitalWrite(spectrumReset,HIGH);
+  delay(1);
+  digitalWrite(spectrumStrobe,HIGH);
+  delay(1);
+  digitalWrite(spectrumStrobe,LOW);
+  delay(1);
+  digitalWrite(spectrumReset,LOW);
+  delay(5);
+}
