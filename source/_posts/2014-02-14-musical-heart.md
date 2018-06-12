@@ -2,14 +2,17 @@
 layout: post
 title:  "Musical Heart"
 date:   2014-02-14 21:58:29 -0800
+tags:
+ - project
+ - electronics
+ - audio
+ - laser cutting
 ---
 <div class="aspect-ratio sixteen-nine"><iframe width="640" height="390" src="//www.youtube.com/embed/MlsUbHCxCiI" frameborder="0" allowfullscreen="" style="margin-bottom: 20px;"></iframe></div>
 
-## Description ##
-
 A week before Valentine's Day, I had an idea for a fun interactive project. I rush ordered parts and managed to get it done just in time. The device uses a stethoscope and a microphone to capture a user's heartbeat, then visualizes it with music box tones and a flashing electroluminescent panel. Below are some process pictures and notes of what I made.
 
-## Build Process ##
+<!-- more -->
 
 {% asset_img process1.jpeg "Prepping heart shapes" %}
 

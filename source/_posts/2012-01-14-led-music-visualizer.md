@@ -1,15 +1,18 @@
 ---
 title: LED Music Visualizer
 date: 2012-01-14 21:31:28
-tags: project
+tags:
+ - project
+ - electronics
+ - audio
+ - LEDs
 ---
 
-
-{% youtube ___XwMbhV4k %}
-
-## Description ##
+<div class="aspect-ratio four-three"><iframe src="//www.youtube.com/embed/___XwMbhV4k" frameborder="0" allowfullscreen="" style="margin-bottom: 20px;"></iframe></div>
 
 Audio is passed in via a standard audio cable through the back of the unit. Inside, a spectrum analyzer chip breaks down the sound into seven frequency bands, passing the results to an Arduino microcontroller. The Arduino takes this information and directs four LED drivers to display the audio spectrum by powering a matrix of 49 LEDs in time with the music.
+
+<!-- more -->
 
 ## Parts List ##
 
@@ -36,4 +39,4 @@ Audio is passed in via a standard audio cable through the back of the unit. Insi
 
 ## Construction Video
 
-{% youtube D_83ZUk8p-U %}
+<div class="aspect-ratio sixteen-nine"><iframe src="//www.youtube.com/embed/D_83ZUk8p-U" frameborder="0" allowfullscreen=""></iframe></div>

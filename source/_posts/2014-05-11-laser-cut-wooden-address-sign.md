@@ -2,14 +2,16 @@
 layout: post
 title:  "Laser Cut Wooden Address Sign"
 date:   2014-05-11 21:58:29 -0800
+tags:
+ - project
+ - woodworking
+ - laser cutting
 ---
 {% asset_img process9.jpg "Laser cut wooden address sign" %}
 
-## Description ##
-
 My sister and her husband recently bought their first house, and I decided to make them a wooden address sign to go in the front yard. My considerations were to keep the design simple while matching its intended rustic setting and be as legible as possible, including at night. With these concerns in mind, I decided on a double-sided wooden sign, with the lettering consisting of contrasting inlay. I was interested in getting more exposure with the Trotec laser cutter at NextFab, and this provided the perfect opportunity. The sign is constructed from black walnut and maple, with a plywood core.
 
-## Build Process ##
+<!-- more -->
 
 {% asset_img process1.jpg "Starting to cut veneer slats" %}
 
