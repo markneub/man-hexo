@@ -5,7 +5,7 @@ tags:
  - workspace
 ---
 
-As a developer, I'm often working on the command line. Last year, a friend at work introduced me to a terminal utility called [tmux](https://en.wikipedia.org/wiki/Tmux), and it's quickly become one of my favorite tools.
+As a developer, I'm often working on the command line. Last year, a [friend](http://blog.yangmillstheory.com/) at work introduced me to a terminal utility called [tmux](https://en.wikipedia.org/wiki/Tmux), and it's quickly become one of my favorite tools.
 
 If you're not familiar with tmux, it's a program that makes managing multiple terminal sessions much easier. Instead of having a bunch of terminal windows that get lost in the mess of everything else you have open, you just have one terminal window open that can quickly access multiple prompts. You work with different prompts by using keyboard commands to configure and jump between tmux sessions, windows, and panes. A tmux session needs at least one window, but the number of panes you divide each window into is up to you. If you frequently run the same set of commands to start your development environment, you can script tmux to create a new session that automatically divides your terminal the way you like it and runs the appropriate commands. I'm barely scratching the surface here — if you're not familiar with tmux and you spend a decent amount of time at the command line, I recommend giving it a shot. I got started with (and am still using) [Oh My Tmux!](https://github.com/gpakosz/.tmux), but there are a ton of other resources on the web.
 
