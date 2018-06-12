@@ -15,11 +15,13 @@ Many devs find it useful to display git status in the terminal, if the current w
 
 tmux has a configurable status bar that can be placed at the bottom or top of the terminal and is nice for showing off the list of tmux windows you have open in the current session, as well as general system information like uptime, username, hostname, etc. Unfortunately, it can't be used with individual panes, which stops it from being useful for git status or current working directory, since those can differ by pane. One possible solution is to use nested tmux sessions (i.e., start another instance of tmux inside a tmux pane) and then configure the inner status bar appropriately, but this sounds complicated to configure. Since tmux 2.3, there has been a new configuration feature called `pane-border-format`, which lets the user configure some per-pane text to be placed in the bottom or top border of each pane. The [built-in variables](http://man7.org/linux/man-pages/man1/tmux.1.html#FORMATS) that `pane-border-format` accepts include `pane_current_path`, but there's no way to retrieve git status. However, it does allow printing the output of an external command. I wrote a short shell script that generates a status line with the current working directory and a git status indicator (borrowing heavily from the [bureau ZSH theme](https://github.com/robbyrussell/oh-my-zsh/blob/master/themes/bureau.zsh-theme) for the git functions) and passed it to `pane_current_path` in my tmux config. Now I have the current working path and git information updating automatically in one place for each pane and I can have a minimal prompt.
 
-{% asset_img "pane-preview.png" "The result: git statuses in tmux panes" %}
+<script src="https://asciinema.org/a/f0zKldxWMkTQa9mgjJ767JwVf.js" id="asciicast-f0zKldxWMkTQa9mgjJ767JwVf" async></script>
 
 {% codeblock .tmux.conf.local %}
 set -wg pane-border-status bottom
-set-option -g pane-border-format '#(sh ~/.dotfiles/pane-border-format.sh --pane-current-path=#{pane_current_path})'
+set-option -g pane-border-format '#(sh ~/.dotfiles/pane-border-format.sh \
+  --pane-current-path=#{pane_current_path} \
+  --pane-active=#{pane_active})'
 set-option -s status-interval 1
 {% endcodeblock %}
 
@@ -27,11 +29,23 @@ set-option -s status-interval 1
 {% codeblock pane-border-format.sh lang:bash %}
 #!/bin/bash
 
+# color variables
+INACTIVE_BORDER_COLOR='#444444'
+ACTIVE_BORDER_COLOR='#00afff'
+RED='#d70000'
+YELLOW='#ffff00'
+GREEN='#5fff00'
+
+# read args
 for i in "$@"
 do
 case $i in
     --pane-current-path=*)
     PANE_CURRENT_PATH="${i#*=}"
+    shift # past argument=value
+    ;;
+    --pane-active=*)
+    PANE_ACTIVE="${i#*=}"
     shift # past argument=value
     ;;
     *) # unknown option
@@ -42,17 +56,25 @@ done
 # replace full path to home directory with ~
 PRETTY_PATH=$(sed "s:^$HOME:~:" <<< $PANE_CURRENT_PATH)
 
+# calculate reset color
+RESET_BORDER_COLOR=$([ $PANE_ACTIVE -eq 1 ] && echo $ACTIVE_BORDER_COLOR || echo $INACTIVE_BORDER_COLOR)
+
+color () {
+  INTENT=$1
+  echo $([ $PANE_ACTIVE -eq 1 ] && echo $INTENT || echo $INACTIVE_BORDER_COLOR)
+}
+
 # git functions adapted from the bureau zsh theme
 # https://github.com/robbyrussell/oh-my-zsh/blob/master/themes/bureau.zsh-theme
 
 ZSH_THEME_GIT_PROMPT_PREFIX="["
 ZSH_THEME_GIT_PROMPT_SUFFIX="] "
-ZSH_THEME_GIT_PROMPT_CLEAN="✓"
+ZSH_THEME_GIT_PROMPT_CLEAN="#[fg=$(color $GREEN)]✓#[fg=$RESET_BORDER_COLOR]"
 ZSH_THEME_GIT_PROMPT_AHEAD="↑"
 ZSH_THEME_GIT_PROMPT_BEHIND="↓"
-ZSH_THEME_GIT_PROMPT_STAGED="⩢"
-ZSH_THEME_GIT_PROMPT_UNSTAGED="⩣"
-ZSH_THEME_GIT_PROMPT_UNTRACKED="⩪"
+ZSH_THEME_GIT_PROMPT_STAGED="#[fg=$(color $GREEN)]●#[fg=$RESET_BORDER_COLOR]"
+ZSH_THEME_GIT_PROMPT_UNSTAGED="#[fg=$(color $YELLOW)]●#[fg=$RESET_BORDER_COLOR]"
+ZSH_THEME_GIT_PROMPT_UNTRACKED="#[fg=$(color $RED)]●#[fg=$RESET_BORDER_COLOR]"
 
 git_branch () {
   ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
@@ -60,7 +82,7 @@ git_branch () {
   echo "${ref#refs/heads/}"
 }
 
-git_status() {
+git_status () {
   _STATUS=""
 
   # check status of files
@@ -108,5 +130,6 @@ git_prompt () {
   echo $_result
 }
 
+# final output
 echo " $PRETTY_PATH $(cd $PANE_CURRENT_PATH && git_prompt)"
 {% endcodeblock %}
