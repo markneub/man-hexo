@@ -18,11 +18,11 @@ tmux has a configurable status bar that can be placed at the bottom or top of th
 <script src="https://asciinema.org/a/f0zKldxWMkTQa9mgjJ767JwVf.js" id="asciicast-f0zKldxWMkTQa9mgjJ767JwVf" async></script>
 
 {% codeblock .tmux.conf.local %}
-set -wg pane-border-status bottom
-set-option -g pane-border-format '#(sh ~/.dotfiles/pane-border-format.sh \
+set -g pane-border-status bottom
+set -g pane-border-format '#(sh ~/.dotfiles/pane-border-format.sh \
   --pane-current-path=#{pane_current_path} \
   --pane-active=#{pane_active})'
-set-option -s status-interval 1
+set -s status-interval 1
 {% endcodeblock %}
 
 
