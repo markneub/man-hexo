@@ -5,7 +5,7 @@
 # Site
 title: Mark Neuburger
 subtitle:
-description: Mark Neuburger is a software engineer in Seattle, WA.
+description: Mark Neuburger is a software engineer in NYC.
 keywords:
 author: Mark Neuburger
 language: en
@@ -22,7 +22,7 @@ permalink_defaults:
 source_dir: source
 public_dir: public
 tag_dir: tags
-archive_dir: posts
+archive_dir: archive
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
@@ -50,7 +50,7 @@ highlight:
 # order_by: Posts order. (Order by date descending by default)
 index_generator:
   path: ''
-  per_page: 5
+  per_page: 3
   order_by: -date
   
 # Category & Tag
